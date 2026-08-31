@@ -10,7 +10,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 GROUP_ID = os.getenv("VK_GROUP_ID")
-ACCESS_TOKEN = os.getenv("VK_ACCESS_TOKEN")
+ACCESS_TOKEN = os.getenv("BOT_TOKEN")
 LINK_TO_SEND = os.getenv("VK_LINK_TO_SEND")
 
 if not all([GROUP_ID, ACCESS_TOKEN, LINK_TO_SEND]):
