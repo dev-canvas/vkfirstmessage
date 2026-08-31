@@ -36,14 +36,14 @@ def create_keyboard():
                 {
                     "action": {
                         "type": "text",
-                        "label": "👨‍👩‍👦 Семья"
+                        "label": "Семья"
                     },
                     "color": "primary"
                 },
                 {
                     "action": {
                         "type": "text",
-                        "label": "🎨 Творчество"
+                        "label": "Творчество"
                     },
                     "color": "primary"
                 }
@@ -52,7 +52,7 @@ def create_keyboard():
                 {
                     "action": {
                         "type": "text",
-                        "label": "🛍 Покупки"
+                        "label": "Покупки"
                     },
                     "color": "primary"
                 }
@@ -143,7 +143,7 @@ def main():
             if event.object.peer_id == event.object.from_id:
                 text = event.object.text
                 # Реагируем только на наши кнопки
-                if text in ["👨‍👩‍👦 Семья", "🎨 Творчество", "🛍 Покупки"]:
+                if text in ["Семья", "Творчество", "Покупки"]:
                     handle_button_click(vk, event)
 
 
