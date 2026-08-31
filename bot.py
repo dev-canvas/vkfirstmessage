@@ -22,11 +22,13 @@ if not all([GROUP_ID, ACCESS_TOKEN, LINK_TO_SEND]):
 GROUP_ID = int(GROUP_ID)
 
 def send_welcome_link(vk, user_id, link):
+	message = f'Спасибо за подписку! Забирай быстрее стикеры по ссылке: {link}'
+	random_id = 0
     try:
         vk.method('messages.send', {
             'user_id': user_id,
-            'message': f'Спасибо за подписку! Забирай быстрее стикеры по ссылке: {link}',
-            'random_id': 0,
+            'message': message,
+            'random_id': random_id,
         })
         logging.info(f"Сообщение отправлено пользователю {user_id}")
     except Exception as e:
