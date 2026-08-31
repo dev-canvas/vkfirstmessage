@@ -7,7 +7,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 GROUP_ID = os.getenv("VK_GROUP_ID")
 ACCESS_TOKEN = os.getenv("BOT_TOKEN")
@@ -16,17 +19,16 @@ LINK_TO_SEND = os.getenv("VK_LINK_TO_SEND")
 if not all([GROUP_ID, ACCESS_TOKEN, LINK_TO_SEND]):
     raise ValueError(
         "Одна или несколько переменных окружения не заданы: "
-        "VK_GROUP_ID, VK_ACCESS_TOKEN, VK_LINK_TO_SEND"
+        "VK_GROUP_ID, BOT_TOKEN, VK_LINK_TO_SEND"
     )
 
 GROUP_ID = int(GROUP_ID)
 
-def send_welcome_link(vk, user_id, link):
-	
-	message = f'Спасибо за подписку! Забирай быстрее стикеры по ссылке: {link}'
-    random_id = random.randint(-2**63, 2**63 - 1)  # уникальный ID для каждого сообщения
 
-    # Опционально: сначала проверить, можно ли писать
+def send_welcome_link(vk, user_id, link):
+    message = f'Спасибо за подписку! Забирай быстрее стикеры по ссылке: {link}'
+    random_id = random.randint(-2**63, 2**63 - 1)
+
     try:
         allowed = vk.messages.isMessagesFromGroupAllowed(user_id=user_id)
         if not allowed.get("is_allowed"):
@@ -34,7 +36,6 @@ def send_welcome_link(vk, user_id, link):
             return
     except Exception as e:
         logging.error(f"Ошибка проверки разрешений для пользователя {user_id}: {e}")
-        # Можно всё равно попробовать отправить или пропустить — на твой выбор
 
     try:
         vk.messages.send(
@@ -48,6 +49,7 @@ def send_welcome_link(vk, user_id, link):
     except Exception as e:
         logging.error(f"Неожиданная ошибка отправки пользователю {user_id}: {e}", exc_info=True)
 
+
 def main():
     vk_session = vk_api.VkApi(token=ACCESS_TOKEN)
     vk = vk_session.get_api()
@@ -60,6 +62,7 @@ def main():
             user_id = event.object.user_id
             logging.info(f"Новый участник группы: {user_id}")
             send_welcome_link(vk, user_id, LINK_TO_SEND)
+
 
 if __name__ == '__main__':
     main()
