@@ -26,7 +26,7 @@ def send_welcome_link(vk, user_id, link):
         vk.method('messages.send', {
             'user_id': user_id,
             'message': f'Спасибо за подписку! Забирай быстрее стикеры по ссылке: {link}',
-            'random_id': random.getrandbits(64),
+            'random_id': 0,
         })
         logging.info(f"Сообщение отправлено пользователю {user_id}")
     except Exception as e:
