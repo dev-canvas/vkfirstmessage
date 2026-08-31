@@ -1,0 +1,49 @@
+import os
+import random
+import logging
+import vk_api
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+from dotenv import load_dotenv
+
+load_dotenv()
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+GROUP_ID = os.getenv("VK_GROUP_ID")
+ACCESS_TOKEN = os.getenv("VK_ACCESS_TOKEN")
+LINK_TO_SEND = os.getenv("VK_LINK_TO_SEND")
+
+if not all([GROUP_ID, ACCESS_TOKEN, LINK_TO_SEND]):
+    raise ValueError(
+        "Одна или несколько переменных окружения не заданы: "
+        "VK_GROUP_ID, VK_ACCESS_TOKEN, VK_LINK_TO_SEND"
+    )
+
+GROUP_ID = int(GROUP_ID)
+
+def send_welcome_link(vk, user_id, link):
+    try:
+        vk.method('messages.send', {
+            'user_id': user_id,
+            'message': f'Спасибо за подписку! Забирай быстрее стикеры по ссылке: {link}',
+            'random_id': random.getrandbits(64),
+        })
+        logging.info(f"Сообщение отправлено пользователю {user_id}")
+    except Exception as e:
+        logging.error(f"Ошибка отправки сообщения пользователю {user_id}: {e}")
+
+def main():
+    vk_session = vk_api.VkApi(token=ACCESS_TOKEN)
+    vk = vk_session.get_api()
+    longpoll = VkBotLongPoll(vk_session, group_id=GROUP_ID)
+
+    logging.info("Бот запущен и ждёт событий вступления в группу...")
+
+    for event in longpoll.listen():
+        if event.type == VkBotEventType.GROUP_JOIN:
+            user_id = event.object.user_id
+            logging.info(f"Новый участник группы: {user_id}")
+            send_welcome_link(vk, user_id, LINK_TO_SEND)
+
+if __name__ == '__main__':
+    main()
