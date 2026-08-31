@@ -22,17 +22,31 @@ if not all([GROUP_ID, ACCESS_TOKEN, LINK_TO_SEND]):
 GROUP_ID = int(GROUP_ID)
 
 def send_welcome_link(vk, user_id, link):
+	
 	message = f'Спасибо за подписку! Забирай быстрее стикеры по ссылке: {link}'
-	random_id = 0
+    random_id = random.randint(-2**63, 2**63 - 1)  # уникальный ID для каждого сообщения
+
+    # Опционально: сначала проверить, можно ли писать
     try:
-        vk.method('messages.send', {
-            'user_id': user_id,
-            'message': message,
-            'random_id': random_id,
-        })
-        logging.info(f"Сообщение отправлено пользователю {user_id}")
+        allowed = vk.messages.isMessagesFromGroupAllowed(user_id=user_id)
+        if not allowed.get("is_allowed"):
+            logging.warning(f"Пользователь {user_id} запретил сообщения от группы")
+            return
     except Exception as e:
-        logging.error(f"Ошибка отправки сообщения пользователю {user_id}: {e}")
+        logging.error(f"Ошибка проверки разрешений для пользователя {user_id}: {e}")
+        # Можно всё равно попробовать отправить или пропустить — на твой выбор
+
+    try:
+        vk.messages.send(
+            user_id=user_id,
+            message=message,
+            random_id=random_id,
+        )
+        logging.info(f"Сообщение отправлено пользователю {user_id}")
+    except vk_api.exceptions.ApiError as e:
+        logging.error(f"API ошибка при отправке пользователю {user_id}: {e}")
+    except Exception as e:
+        logging.error(f"Неожиданная ошибка отправки пользователю {user_id}: {e}", exc_info=True)
 
 def main():
     vk_session = vk_api.VkApi(token=ACCESS_TOKEN)
