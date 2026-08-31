@@ -30,7 +30,7 @@ GROUP_ID = int(GROUP_ID)
 def create_keyboard():
     """Создаёт JSON для клавиатуры с тремя кнопками"""
     keyboard = {
-        "one_time": False,  # False = кнопки остаются после нажатия
+        "one_time": True,  # False = кнопки остаются после нажатия
         "buttons": [
             [
                 {
